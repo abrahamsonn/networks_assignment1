@@ -1,3 +1,5 @@
+# client.py
+
 #!/usr/bin/env python
 import sys
 import httplib
@@ -17,7 +19,7 @@ def main():
     params = urllib.urlencode({"X": X, "Y": Y})
     headers = {"Accept": "text/plain", "Accept-Language": "en-us,en;"}
     connection = httplib.HTTPConnection(ip, port)
-    connection.request("POST", "", params, headers)
+    connection.request("POST", str(X)+","+str(Y), params, headers)
     response = connection.getresponse()
 
     print response.status, response.reason
