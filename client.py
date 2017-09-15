@@ -25,6 +25,8 @@ def main():
     data = response.read()
     print data
 
+    connection.close()
+
 if __name__ == '__main__':
     main()
 
