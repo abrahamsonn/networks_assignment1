@@ -23,14 +23,22 @@ def main():
         print 'Enter the correct args (port, board.txt)'
         return 0
 
-    # Variable setup
+# Variable setup
     HOST = ''
     serverPort = int(sys.argv[1])
     board_file = sys.argv[2]
-    file_o = open(board_file, 'r')
-    board = [line for line in file_o]
 
-    # Bind the passed socket fd serverSocket
+    file_o = open(board_file, 'r')
+    board = [str(line) for line in file_o]
+
+    # helps keep track of which ships have been sunk
+    C_health = 5
+    B_health = 4
+    R_health = 3
+    S_health = 3
+    D_health = 2
+
+# Bind the passed socket fd serverSocket
     serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     serverSocket.bind((HOST, serverPort))
     serverSocket.listen(1)
@@ -85,19 +93,58 @@ def main():
                 connectionSocket.close()
                 continue
             else:
+            # If it's a valid position, determine if it's a hit or miss
                 print "Salvo fired upon " + "[" + str(Y) + "][" + str(X) + "]\n"
-                if board[Y][X] == '-':
+                if board[Y][X] == '_':
                     print 'Miss!'
+                    # How do you replace single elements of an array in python?
+                    board[Y][X].replace(board[Y][X], "+")
                 else:
                     hit = 1
-                    print 'Hit!'
+                    print board[Y][X] + " was hit!\n"
+                    # How do you replace single elements of an array in python?
+                    board[Y][X].replace(board[Y][X], "X")
+
+                    # This keeps track of what has/hasn't been sunk
+                    if board[Y][X] == 'C':
+                        C_health = C_health - 1
+                        print 'C_health = ' + str(C_health) + "\n"
+                        if C_health == 0:
+                            print 'C has been sunk!!!'
+                    elif board[Y][X] == 'B':
+                        B_health = B_health - 1
+                        print 'B_health = ' + str(B_health) + "\n"
+                        if B_health == 0:
+                            print 'B has been sunk!!!'
+                    elif board[Y][X] == 'R':
+                        R_health = R_health - 1
+                        print 'R_health = ' + str(R_health) + "\n"
+                        if R_health == 0:
+                            print 'R has been sunk!!!'
+                    elif board[Y][X] == 'S':
+                        S_health = S_health - 1
+                        print 'S_health = ' + str(S_health) + "\n"
+                        if S_health == 0:
+                            print 'S has been sunk!!!'
+                    elif board[Y][X] == 'D':
+                        D_health = D_health - 1
+                        print 'D_health = ' + str(D_health) + "\n"
+                        if D_health == 0:
+                            print 'D has been sunk!!!'
+
+    # Print the current status of the board
+        print 
+        print '------------------- board: -------------------'
+        for i in board:
+            for j in i:
+                sys.stdout.write(j)
+        print '----------------------------------------------'
+        print 
 
     # Reply to the client & close connection
         message = 'HTTP /1.1 OK\r\nConnection: Close\r\n\r\nhit=' + str(hit)
         if sink != 'F':
             message = message + '&sink=' + str(sink)
-        else:
-            message = message + '\r\n'
         connectionSocket.send(message)
         connectionSocket.close()
 
