@@ -5,6 +5,7 @@ import sys
 import httplib
 import urllib
 import socket
+import re
 
 def main():
    
@@ -31,9 +32,20 @@ def main():
     print 
     print '-------------------- Data --------------------'
     print data
+    print
+    for i in range(len(data)):
+        sys.stdout.write(data[i])
+        sys.stdout.write(' ')
+    print
     print '----------------------------------------------'
     print 
 
+
+# Search data for the X=#&Y=# pattern
+    pattern = re.compile('(X=\d+&Y=\d+)\|(Y=\d+&X=\d+)')
+    print pattern.match(data)
+
+# Prinnt special data
     print 
     print '---------------- Parsed data:  ---------------'
     for i in data:
