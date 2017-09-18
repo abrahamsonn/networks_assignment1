@@ -16,7 +16,7 @@ def sig_handler(signum, frame):
 
 def main():
    
-    signal.signal(signal.SIGALRM, sig_handler)
+    #signal.signal(signal.SIGALRM, sig_handler)
 
 # Argument checking
     if len(sys.argv) != 3:
