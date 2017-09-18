@@ -43,7 +43,7 @@ def main():
     serverSocket.bind((HOST, serverPort))
     serverSocket.listen(1)
 
-    while (exit != 1):
+    while (True):
         print 'Ready to receive'
 
         connectionSocket, address = serverSocket.accept()
