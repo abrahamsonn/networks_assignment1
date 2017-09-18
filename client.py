@@ -40,55 +40,95 @@ def main():
     else:
         isHit = hitResponse[4]
 
-    UpdateKnowledgeBoard(isHit, Y, X)
+    UpdateOpponentBoard(isHit, Y, X)
+    UpdateHTMLOpponentBoard()
 
     return 0
 
     connection.close()
 
-def InitiateKnowledgeBoard():
-    knowledgeBoardFile = open('knowledgeBoard.txt', 'w')
+def InitiateOpponentBoard():
+    opponentBoardFile = open('opponent_board.txt', 'w')
     for i in range(1,11):
-        knowledgeBoardFile.write('__________\n')
+        opponentBoardFile.write('__________\n')
 
-def UpdateKnowledgeBoard(isHit, inY, inX):
+def UpdateOpponentBoard(isHit, inY, inX):
     x = int(inX)
     y = int(inY)
 
     try:
-        print 'try this'
-        knowledgeBoardFile = open('knowledgeBoard.txt', 'r')
+        opponentBoardFile = open('opponent_board.txt', 'r')
     except:
-        InitiateKnowledgeBoard()
-        knowledgeBoardFile = open('knowledgeBoard.txt', 'r')
-    knowledgeBoard = [line for line in knowledgeBoardFile]
+        InitiateOpponentBoard()
+        opponentBoardFile = open('opponent_board.txt', 'r')
+    opponentBoard = [line for line in opponentBoardFile]
 
-    newKnowledgeBoard = []
+    newOpponentBoard = []
 
     for oldLine in range(0,10):
-        newKnowledgeBoard.append([])
+        newOpponentBoard.append([])
         for oldColumn in range(0,10):
-            newKnowledgeBoard[oldLine].append(ord(knowledgeBoard[oldLine][oldColumn]))
+            newOpponentBoard[oldLine].append(ord(opponentBoard[oldLine][oldColumn]))
 
     if isHit == '1':
-        newKnowledgeBoard[y][x] = 88
+        newOpponentBoard[y][x] = 88
     elif isHit == '0':
-        newKnowledgeBoard[y][x] = 79
+        newOpponentBoard[y][x] = 79
     else:
         return 1
 
-    knowledgeBoardFile.close()
+    opponentBoardFile.close()
 
-    newKnowledgeBoardFile = open('knowledgeBoard.txt', 'w')
+    newOpponentBoardFile = open('opponent_board.txt', 'w')
 
     for newLine in range(0,10):
         for newColumn in range(0,10):
-            newCharacter = chr(newKnowledgeBoard[newLine][newColumn])
-            newKnowledgeBoardFile.write(newCharacter)
-        newKnowledgeBoardFile.write('\n')
-    knowledgeBoardFile.close()
+            newCharacter = chr(newOpponentBoard[newLine][newColumn])
+            newOpponentBoardFile.write(newCharacter)
+        newOpponentBoardFile.write('\n')
+    opponentBoardFile.close()
 
     return 0
+
+def UpdateHTMLOpponentBoard():
+    font = 'Consolas'
+
+    opponentBoardFile = open('opponent_board.txt', 'r')
+    opponentBoardHTML = open('opponent_board.html', 'w')
+
+    opponentBoardHTML.write('<html><title>Opponent\'s Board</title><body>\n')
+    opponentBoardHTML.write(
+        '<font face = "'
+        + font
+        + '" size = "5">&nbsp 0 1 2 3 4 5 6 7 8 9 X</font><br />')
+    lineNumber = 0
+    for line in opponentBoardFile:
+        spacedLine = AddSpacesIntoLine(line)
+        opponentBoardHTML.writelines(
+            '<font face = "'
+            + font
+            + '" size = "5">'
+            + str(lineNumber)
+            + ' '
+            + spacedLine
+            + '</font><br />')
+        lineNumber = lineNumber + 1
+    opponentBoardHTML.write(
+        '<font face = "'
+        + font
+        + '" size = "5">Y</font><br /></body></html>')
+
+    opponentBoardFile.close()
+    opponentBoardHTML.close()
+
+def AddSpacesIntoLine(line):
+    outputLine = []
+
+    for i in range(0,10):
+        outputLine.append(line[i])
+        outputLine.append(' ')
+        
+    return ''.join(outputLine)
 
 if __name__ == '__main__':
     main()
