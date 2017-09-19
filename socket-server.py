@@ -247,7 +247,8 @@ def UpdateHTMLOpponentBoard():
     try:
         opponentBoardFile = open('opponent_board.txt', 'r')
     except:
-        opponentBoardFile = InitiateOpponentBoard()
+        InitiateOpponentBoard()
+        opponentBoardFile = open('opponent_board.txt', 'r')
     opponentBoardHTML = open('opponent_board.html', 'w')
 
     opponentBoardHTML.write('<html><title>Opponent\'s Board</title><body>\n')
@@ -279,6 +280,7 @@ def InitiateOpponentBoard():
     opponentBoardFile = open('opponent_board.txt', 'w')
     for i in range(1,11):
         opponentBoardFile.write('__________\n')
+
 def AddSpacesIntoLine(line):
     outputLine = []
 
@@ -300,12 +302,12 @@ def SendBoard(boardName, connectionSocket):
         status = 1
 
     try:
-        
         try:
             openedBoardFile = open(boardName, 'rb')
+            boardHTML = openedBoardFile.read(1024)
         except:
             status = 2
-        boardHTML = openedBoardFile.read(1024)
+            boardHTML = ''
 
         connectionSocket.send(
             'HTTP/1.1'
