@@ -14,6 +14,34 @@ def sig_handler(signum, frame):
     print 'SIG_INT handled'
     exit = 1
 
+def updateBoard(char, Y, X, board):
+    empty_board = [ [ None for y in range( 11 ) ] for x in range( 10 ) ]
+
+    for x in range(0, 10):
+        for y in range(0, 10):
+            if x == X and y == Y:
+                empty_board[y][x] = char
+            else:
+                empty_board[y][x] = board[y][x]
+
+        empty_board[x][10] = '\n'
+
+    return empty_board
+
+def writeToFile(board):
+# Write the board to file titled MYboard.html
+    outBoard_f = open('MYboard.html', 'w+')
+    outBoard_f.write("<!DOCTYPE html><html><body>")
+    for y in range(0, 10):
+        for x in range(0, 11):
+            outBoard_f.write(' ' + board[y][x] + ' |')
+
+        outBoard_f.write("<br>------------------------------------------------------<br>|")
+
+    outBoard_f.write("</body></html>")
+
+    outBoard_f.close()
+
 def main():
    
     #signal.signal(signal.SIGALRM, sig_handler)
@@ -108,38 +136,38 @@ def main():
                     if board[Y][X] == '_':
                         print 'Miss!'
                         # How do you replace single elements of an array in python?
-                        board[Y][X].replace(board[Y][X], "O")
+                        board = updateBoard('O', Y, X, board)
                     else:
                         hit = 1
                         print board[Y][X] + " was hit!\n"
                         # How do you replace single elements of an array in python?
-                        board[Y][X].replace(board[Y][X], "X")
+                        board = updateBoard('X', Y, X, board)
 
                         # This keeps track of what has/hasn't been sunk
                         if board[Y][X] == 'C':
                             C_health = C_health - 1
                             print 'C_health = ' + str(C_health) + "\n"
-                            if C_health == 0:
+                            if int(C_health) == 0:
                                 print 'C has been sunk!!!'
                         elif board[Y][X] == 'B':
                             B_health = B_health - 1
                             print 'B_health = ' + str(B_health) + "\n"
-                            if B_health == 0:
+                            if int(B_health) == 0:
                                 print 'B has been sunk!!!'
                         elif board[Y][X] == 'R':
                             R_health = R_health - 1
                             print 'R_health = ' + str(R_health) + "\n"
-                            if R_health == 0:
+                            if int(R_health) == 0:
                                 print 'R has been sunk!!!'
                         elif board[Y][X] == 'S':
                             S_health = S_health - 1
                             print 'S_health = ' + str(S_health) + "\n"
-                            if S_health == 0:
+                            if int(S_health) == 0:
                                 print 'S has been sunk!!!'
                         elif board[Y][X] == 'D':
                             D_health = D_health - 1
                             print 'D_health = ' + str(D_health) + "\n"
-                            if D_health == 0:
+                            if int(D_health) == 0:
                                 print 'D has been sunk!!!'
 
         # Print the current status of the board
@@ -147,9 +175,10 @@ def main():
             print '------------------- board: -------------------'
             for i in board:
                 for j in i:
-                    sys.stdout.write(j)
+                    sys.stdout.write(str(j))
             print '----------------------------------------------'
             print 
+            writeToFile(board)
 
         # Reply to the client & close connection
             message = 'HTTP /1.1 OK\r\nConnection: Close\r\n\r\nhit=' + str(hit)
