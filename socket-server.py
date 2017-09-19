@@ -30,7 +30,7 @@ def updateBoard(char, Y, X, board):
 
 def writeToFile(board):
 # Write the board to file titled MYboard.html
-    outBoard_f = open('MYboard.html', 'w+')
+    outBoard_f = open('own_board.html', 'w+')
     outBoard_f.write("<!DOCTYPE html><html><body>")
     for y in range(0, 10):
         for x in range(0, 11):
