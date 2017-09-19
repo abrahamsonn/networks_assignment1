@@ -188,19 +188,134 @@ def main():
             connectionSocket.close()
 
         elif re.search('GET', parsed_data):
-            message = '<!DOCTYPE html><html><body>'
-#            for line in board:
-#                message = message + str(board)
-            for i in board:
-                if i != '\n':
-                    message = message + i
-                elif i == '\n' or i == '\r':
-                    message = message + '<br>'
-            message = message + '</body></html>'
-            connectionSocket.send(str(message))
+            fileNameToSend = []
+
+            if re.search('own_board.html', parsed_data):
+                fileNameToSend.append('own_board.html')
+            elif re.search('opponent_board.html', parsed_data):
+                UpdateHTMLOpponentBoard()
+                fileNameToSend.append('opponent_board.html')
+            else:
+                fileNameToSend.append('-1')
+
+            sendStatus = SendBoard(fileNameToSend[0], connectionSocket)
+            print '------------------- GET ----------------------'
+            print sendStatus
+            print '----------------------------------------------'
+
             connectionSocket.close()
 
+        UpdateHTMLOwnBoard()
+
     file_o.close()
+
+def UpdateHTMLOwnBoard():
+    font = 'Consolas'
+
+    ownBoardFile = open('board.txt', 'r')
+    ownBoardHTML = open('own_board.html', 'w')
+
+    ownBoardHTML.write('<html><title>Own Board</title><body>\n')
+    ownBoardHTML.write(
+        '<font face = "'
+        + font
+        + '" size = "5">&nbsp 0 1 2 3 4 5 6 7 8 9 X</font><br />')
+    lineNumber = 0
+    for line in ownBoardFile:
+        spacedLine = AddSpacesIntoLine(line)
+        ownBoardHTML.writelines(
+            '<font face = "'
+            + font
+            + '" size = "5">'
+            + str(lineNumber)
+            + ' '
+            + spacedLine
+            + '</font><br />')
+        lineNumber = lineNumber + 1
+    ownBoardHTML.write(
+        '<font face = "'
+        + font
+        + '" size = "5">Y</font><br /></body></html>')
+
+    ownBoardFile.close()
+    ownBoardHTML.close()
+
+
+def UpdateHTMLOpponentBoard():
+    font = 'Consolas'
+
+    try:
+        opponentBoardFile = open('opponent_board.txt', 'r')
+    except:
+        opponentBoardFile = InitiateOpponentBoard()
+    opponentBoardHTML = open('opponent_board.html', 'w')
+
+    opponentBoardHTML.write('<html><title>Opponent\'s Board</title><body>\n')
+    opponentBoardHTML.write(
+        '<font face = "'
+        + font
+        + '" size = "5">&nbsp 0 1 2 3 4 5 6 7 8 9 X</font><br />')
+    lineNumber = 0
+    for line in opponentBoardFile:
+        spacedLine = AddSpacesIntoLine(line)
+        opponentBoardHTML.writelines(
+            '<font face = "'
+            + font
+            + '" size = "5">'
+            + str(lineNumber)
+            + ' '
+            + spacedLine
+            + '</font><br />')
+        lineNumber = lineNumber + 1
+    opponentBoardHTML.write(
+        '<font face = "'
+        + font
+        + '" size = "5">Y</font><br /></body></html>')
+
+    opponentBoardFile.close()
+    opponentBoardHTML.close()
+
+def InitiateOpponentBoard():
+    opponentBoardFile = open('opponent_board.txt', 'w')
+    for i in range(1,11):
+        opponentBoardFile.write('__________\n')
+def AddSpacesIntoLine(line):
+    outputLine = []
+
+    for i in range(0,10):
+        outputLine.append(line[i])
+        outputLine.append(' ')
+        
+    return ''.join(outputLine)
+
+def SendBoard(boardName, connectionSocket):
+    statuses = [
+        '200 OK',
+        '400 Bad Request',
+        '404 Not Found'
+        ]
+
+    status = 0
+    if boardName == '-1':
+        status = 1
+
+    try:
+        
+        try:
+            openedBoardFile = open(boardName, 'rb')
+        except:
+            status = 2
+        boardHTML = openedBoardFile.read(1024)
+
+        connectionSocket.send(
+            'HTTP/1.1'
+            + statuses[status]
+            + '\r\nContent-Type: text/html; \r\n\r\n'
+            + boardHTML)
+
+        return boardName + ' transmission has succeeded.'
+    except:
+        return boardName + ' transmission has failed.'
 
 if __name__ == '__main__':
     main()
