@@ -205,11 +205,11 @@ def main():
 
             connectionSocket.close()
 
-        UpdateHTMLOwnBoard()
+        UpdateHTMLMyBoard()
 
     file_o.close()
 
-def UpdateHTMLOwnBoard():
+def UpdateHTMLMyBoard():
     font = 'Consolas'
 
     ownBoardFile = open('board.txt', 'r')
